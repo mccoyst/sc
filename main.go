@@ -9,10 +9,27 @@ import (
 )
 
 func main() {
+	var line []byte
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
-		line := s.Text()
-		parts := strings.Fields(line)
+		if line == nil {
+			line = make([]byte, len(s.Bytes()))
+			copy(line, s.Bytes())
+		} else {
+			line = append(line, s.Bytes()...)
+		}
+
+		if len(line) == 0 {
+			line = nil
+			continue
+		}
+
+		if line[len(line)-1] == '\\' {
+			line = line[:len(line)-1]
+			continue
+		}
+
+		parts := strings.Fields(string(line))
 		c := exec.Command(parts[0], parts[1:]...)
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
@@ -22,6 +39,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "! error when running %q: %v\n", line, err)
 			break
 		}
+		line = nil
+
 	}
 
 	if err := s.Err(); err != nil {

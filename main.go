@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func main() {
@@ -29,7 +28,7 @@ func main() {
 			continue
 		}
 
-		parts := strings.Fields(string(line))
+		parts := parseLine(line)
 		c := exec.Command(parts[0], parts[1:]...)
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
